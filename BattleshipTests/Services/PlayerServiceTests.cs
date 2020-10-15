@@ -26,14 +26,14 @@ namespace Battleship.Services.Tests
         {
             var mShip = new Mock<Ship>(It.IsAny<Constraints.ShipType>());
 
-            mShip.Object.Coordinates = new List<string>();
+            mShip.Object.Coordinates = new List<Coordinates>();
             ship = new Lazy<Ship>(() => mShip.Object);
 
             var miShip = new Mock<IShip>();
-            miShip.Setup(s => s.Attack(It.IsAny<string>())).Returns(It.IsAny<bool>);
+            miShip.Setup(s => s.Attack(It.IsAny<string>(), It.IsAny<IMissile>())).Returns(It.IsAny<bool>);
 
             Ship shipMock = new Ship(It.IsAny<Constraints.ShipType>());
-            shipMock.Coordinates = new List<string>();
+            shipMock.Coordinates = new List<Coordinates>();
 
             miShip.Setup(s => s.Ship).Returns(() => shipMock).Callback(() => { shipMock = ship.Value; });
 
@@ -45,10 +45,10 @@ namespace Battleship.Services.Tests
             Players = new List<Player>();
 
             playerService.SetupGet(p => p.Players).Returns(Players);
-            playerService.Setup(p => p.CreatePlayer(It.IsAny<string>(), It.IsAny<IEnumerable<IShip>>(), It.IsAny<string[]>()))
+            playerService.Setup(p => p.CreatePlayer(It.IsAny<string>(), It.IsAny<IEnumerable<IShip>>(), It.IsAny<string[]>(), It.IsAny<IMissile>()))
                 .Callback((string Name, IEnumerable<IShip> paramShips, string[] targets)=>
                 {
-                    Players.Add(new Player(Name)
+                    Players.Add(new Player(Name, null)
                     {
                         Ships = paramShips,
                         Targets = targets
@@ -63,7 +63,7 @@ namespace Battleship.Services.Tests
         public void CreatePlayer_WhenCalled_ShouldCreate_1_Player()
         {
             //Act
-            PlayerService.Object.CreatePlayer("P1", ships, new string[] { "A1", "B1" });
+            PlayerService.Object.CreatePlayer("P1", ships, new string[] { "A1", "B1" }, null);
             //assert
             Assert.AreEqual(PlayerService.Object.Players.Count, 1);
         }

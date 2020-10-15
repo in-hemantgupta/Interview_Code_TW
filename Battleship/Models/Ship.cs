@@ -11,7 +11,7 @@ namespace Battleship.Models
         public ShipType ShipType { get; set; }
 
 
-        public List<string> Coordinates { get; set; }
+        public List<Coordinates> Coordinates { get; set; }
         private short _life;
         public short Life
         {

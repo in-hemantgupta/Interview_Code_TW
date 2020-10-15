@@ -14,7 +14,7 @@ namespace Battleship.Services
             this.Ship = new Ship(Constraints.ShipType.Q)
             {
                 Life = 2,
-                Coordinates = new List<string>()
+                Coordinates = new List<Coordinates>()
             };
         }
     }

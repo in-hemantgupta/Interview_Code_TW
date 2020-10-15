@@ -37,14 +37,14 @@ namespace Battleship.Services.Tests
         {
             var mShip = new Mock<Ship>(It.IsAny<Constraints.ShipType>());
 
-            mShip.Object.Coordinates = new List<string>();
+            mShip.Object.Coordinates = new List<Coordinates>();
             ship = new Lazy<Ship>(() => mShip.Object);
 
             var miShip = new Mock<IShip>();
-            miShip.Setup(s => s.Attack(It.IsAny<string>())).Returns(It.IsAny<bool>);
+            miShip.Setup(s => s.Attack(It.IsAny<string>(), It.IsAny<IMissile>())).Returns(It.IsAny<bool>);
 
             Ship shipMock = new Ship(It.IsAny<Constraints.ShipType>());
-            shipMock.Coordinates = new List<string>();
+            shipMock.Coordinates = new List<Coordinates>();
 
             miShip.Setup(s => s.Ship).Returns(() => shipMock).Callback(() => { shipMock = ship.Value; });
 

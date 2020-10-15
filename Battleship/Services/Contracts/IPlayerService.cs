@@ -6,7 +6,7 @@ namespace Battleship.Services
     public interface IPlayerService
     {
         List<Player> Players { get; set; }
-        void CreatePlayer(string Name, IEnumerable<IShip> ships, string[] targets);
+        void CreatePlayer(string Name, IEnumerable<IShip> ships, string[] targets, IMissile missile);
         string Play();
         void PlayerTurn(Player player, int maxTargets, IEnumerable<IShip> targetShips);
     }

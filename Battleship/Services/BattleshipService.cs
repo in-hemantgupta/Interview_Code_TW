@@ -1,4 +1,5 @@
 ﻿using Battleship.Models;
+using Battleship.Services.Contracts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,13 +17,15 @@ namespace Battleship.Services
         public List<Player> Players { get; set; }
         IPlayerService PlayerService { get; }
         IShipFactory ShipFactory { get; }
+        IMissileFactory missileFactory { get; }
         #endregion
 
 
-        public BattleshipService(IPlayerService playerService, IShipFactory shipFactory)
+        public BattleshipService(IPlayerService playerService, IShipFactory shipFactory, IMissileFactory missileFactory)
         {
             PlayerService = playerService;
             ShipFactory = shipFactory;
+            this.missileFactory = missileFactory;
         }
 
         public string StartTheGame(string[] args)
@@ -102,8 +105,8 @@ namespace Battleship.Services
 
             this.BattleshipArea = new Area(width, height);
 
-            PlayerService.CreatePlayer("Player-1", P1Ships.AsEnumerable(), _input_target_p1.Split(' '));
-            PlayerService.CreatePlayer("Player-2", P2Ships.AsEnumerable(), _input_target_p2.Split(' '));
+            PlayerService.CreatePlayer("Player-1", P1Ships.AsEnumerable(), _input_target_p1.Split(' '), missileFactory.CreateMissile(MissileType.Standard));
+            PlayerService.CreatePlayer("Player-2", P2Ships.AsEnumerable(), _input_target_p2.Split(' '), missileFactory.CreateMissile(MissileType.Standard));
 
             //Start the game
             return PlayerService.Play();
@@ -121,19 +124,23 @@ namespace Battleship.Services
         private IShip InitializeShip(int _ship_dimention_w, int _ship_dimention_h, string _shipCoordinates, List<IShip> Ships, ShipType typeOfShip)
         {
             var playerShip = ShipFactory.Create(typeOfShip);
-            playerShip.Ship.Coordinates.Add(_shipCoordinates);
+
+            var shipCoordinates = _shipCoordinates.ToCharArray();
+            playerShip.Ship.Coordinates.Add(new Coordinates(shipCoordinates[0], (short)shipCoordinates[1]));
 
             if (_ship_dimention_w > 0 || _ship_dimention_h > 0)
             {
                 for (int i = 1; i < _ship_dimention_h; i++)
                 {
-                    var newdim = ((char)(Convert.ToInt16(_shipCoordinates.ToCharArray()[0]) + 1)).ToString() + _shipCoordinates.ToCharArray()[1].ToString();
-                    playerShip.Ship.Coordinates.Add(newdim);
+                    char x = (char)(Convert.ToInt16(_shipCoordinates.ToCharArray()[0]) + 1);
+                    short y = (short)_shipCoordinates.ToCharArray()[1];
+                    playerShip.Ship.Coordinates.Add(new Coordinates(x, y));
                 }
                 for (int i = 1; i < _ship_dimention_w; i++)
                 {
-                    var newdim = (_shipCoordinates.ToCharArray()[0].ToString() + (Convert.ToInt16(_shipCoordinates.ToCharArray()[1].ToString()) + 1).ToString());
-                    playerShip.Ship.Coordinates.Add(newdim);
+                    char x = (char)(_shipCoordinates.ToCharArray()[0]);
+                    short y = (short)(Convert.ToInt16(_shipCoordinates.ToCharArray()[1].ToString()) + 1);
+                    playerShip.Ship.Coordinates.Add(new Coordinates(x, y));
                 }
             }
             return playerShip;

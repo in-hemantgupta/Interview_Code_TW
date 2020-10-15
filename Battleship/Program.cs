@@ -1,4 +1,6 @@
-﻿using Battleship.Services;
+﻿using Battleship.Models;
+using Battleship.Services;
+using Battleship.Services.Contracts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -44,6 +46,13 @@ namespace Battleship
             IShip shipFactory(ShipType shipType) => container.Resolve<IShip>(shipType.ToString());
             var factory = new ShipFactory(shipFactory);
             container.RegisterInstance<IShipFactory>(factory);
+
+            container.RegisterType<IMissile, StandardMissile>(MissileType.Standard.ToString());
+            container.RegisterType<IMissile, SpecialMissile>(MissileType.Standard.ToString());
+            container.RegisterType<IMissile, RangeMissile>(MissileType.Standard.ToString());
+            IMissile missileFactory(MissileType missileType) => container.Resolve<IMissile>(missileType.ToString());
+            var _missileFactory = new MissileFactory(missileFactory);
+            container.RegisterInstance<IMissileFactory>(_missileFactory);
 
             container.RegisterType<IBattleshipService, BattleshipService>();
 

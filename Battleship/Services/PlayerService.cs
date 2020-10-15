@@ -17,9 +17,9 @@ namespace Battleship.Services
             this.Players = new List<Player>();
         }
 
-        public void CreatePlayer(string Name, IEnumerable<IShip> ships, string[] targets)
+        public void CreatePlayer(string Name, IEnumerable<IShip> ships, string[] targets, IMissile missile)
         {
-            this.Players.Add(new Player(Name)
+            this.Players.Add(new Player(Name, missile)
             {
                 Ships = ships,
                 Targets = targets
@@ -82,7 +82,8 @@ namespace Battleship.Services
                 }
                 else
                 {
-                    bool hit = targetShips.Any(t => t.Attack(player.Targets[pCount]));
+
+                    bool hit = targetShips.Any(t => t.Attack(player.Targets[pCount], player.Missile));
                     var pname = player.Name;
                     Console.WriteLine(player.Name + " fires a missile with target " + player.Targets[pCount] + " which got " + (hit ? "hit" : "missed"));
                     if (!hit)

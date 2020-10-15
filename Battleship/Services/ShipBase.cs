@@ -15,13 +15,28 @@ namespace Battleship.Services
         /// </summary>
         /// <param name="coordinates"></param>
         /// <returns></returns>
-        public bool Attack(string coordinates)
+        public bool Attack(string Target, IMissile missile)
         {
-            if (this.Ship.Coordinates.Any(s => s == coordinates))
-            {
-                this.Ship.Life -= 1;
-                return true;
-            }
+            //-1,0,1 LTR
+            //-1,0,1 UTD
+            //LEFT -1,0, right 1,0, down = 0,-1, up = 0,1, CURRENT = 0,0 //SPECIAL MISSILE
+            //RANGE = 9,9
+            //CELL 0,0
+
+            //foreach (var item in missile.TargetArea)
+            //{
+            //    this.Ship.Coordinates
+            //}
+
+            //foreach (int item in missile.TargetType)
+            //{
+            //    //
+            //}
+            //if (this.Ship.Coordinates.Any(s => s == coordinates))
+            //{
+            //    this.Ship.Life -= 1;
+            //    return true;
+            //}
             return false;
         }
     }

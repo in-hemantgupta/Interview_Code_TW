@@ -1,4 +1,5 @@
 ﻿using Battleship.Models;
+using Battleship.Services.Contracts;
 using Moq;
 using NUnit.Framework;
 using System;
@@ -33,14 +34,14 @@ namespace Battleship.Services.Tests
         {
             var mShip = new Mock<Ship>(It.IsAny<Constraints.ShipType>());
 
-            mShip.Object.Coordinates = new List<string>();
+            mShip.Object.Coordinates = new List<Coordinates>();
             ship = new Lazy<Ship>(() => mShip.Object);
 
             var miShip = new Mock<IShip>();
-            miShip.Setup(s => s.Attack(It.IsAny<string>())).Returns(It.IsAny<bool>);
+            miShip.Setup(s => s.Attack(It.IsAny<string>(), It.IsAny<IMissile>())).Returns(It.IsAny<bool>);
 
             Ship shipMock = new Ship(It.IsAny<Constraints.ShipType>());
-            shipMock.Coordinates = new List<string>();
+            shipMock.Coordinates = new List<Coordinates>();
 
             miShip.Setup(s => s.Ship).Returns(() => shipMock).Callback(() => { shipMock = ship.Value; });
 
@@ -59,22 +60,24 @@ namespace Battleship.Services.Tests
             var playerService = new Mock<IPlayerService>();
             Players = new List<Player>();
 
+            var missileService= new Mock<IMissileFactory>();
+
             playerService.SetupGet(p => p.Players).Returns(Players);
-            playerService.Setup(p => p.CreatePlayer(It.IsAny<string>(), It.IsAny<IEnumerable<IShip>>(), It.IsAny<string[]>()))
+            playerService.Setup(p => p.CreatePlayer(It.IsAny<string>(), It.IsAny<IEnumerable<IShip>>(), It.IsAny<string[]>(), It.IsAny<IMissile>()))
                 .Callback((string Name, IEnumerable<IShip> paramShips, string[] targets) =>
                 {
-                    Players.Add(new Player(Name)
+                    Players.Add(new Player(Name, missileService.Object.CreateMissile(Constraints.MissileType.Range))
                     {
                         Ships = paramShips,
                         Targets = targets
-                    });
+                    }); ;
                 });
             playerService.Setup(p => p.Play()).Returns("Player-2 won the battle");
 
             playerService.Setup(p => p.PlayerTurn(player, It.IsAny<int>(), ships));
             this.PlayerService = playerService;
 
-            var battleshipService = new BattleshipService(PlayerService.Object, ShipFactory.Object);
+            var battleshipService = new BattleshipService(PlayerService.Object, ShipFactory.Object, null);
             this.BattleshipService = battleshipService;
         }
 

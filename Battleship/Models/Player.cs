@@ -13,9 +13,12 @@ namespace Battleship.Models
         public IEnumerable<IShip> Ships { get; set; }
         public string[] Targets{ get; set; }
 
-        public Player(string name)
+        public IMissile Missile { get; set; }
+
+        public Player(string name, IMissile missile)
         {
             this.Name = name;
+            Missile = missile;
         }
     }
 }
